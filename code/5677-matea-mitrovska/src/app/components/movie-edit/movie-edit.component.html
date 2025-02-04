@@ -1,0 +1,123 @@
+<div class="movie-edit-container">
+  @if (loading) {
+    <div class="loading">Loading movie details...</div>
+  } @else if (error) {
+    <div class="error">{{ error }}</div>
+  } @else if (!movie) {
+    <div class="no-movie">Movie not found.</div>
+  } @else {
+    <form (ngSubmit)="onSubmit()" #movieForm="ngForm" class="movie-form">
+      <h2>Edit Movie</h2>
+
+      <div class="form-group">
+        <label for="id">ID</label>
+        <input type="number" id="id" [value]="movie.id" disabled class="form-control">
+      </div>
+
+      <div class="form-group">
+        <label for="title">Title *</label>
+        <input 
+          type="text" 
+          id="title" 
+          name="title"
+          [(ngModel)]="movie.title"
+          required
+          class="form-control"
+          #title="ngModel">
+        @if (title.invalid && (title.dirty || title.touched)) {
+          <div class="error-message">Title is required</div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="year">Year *</label>
+        <input 
+          type="number" 
+          id="year" 
+          name="year"
+          [(ngModel)]="movie.year"
+          required
+          min="1900"
+          max="2100"
+          class="form-control"
+          #year="ngModel">
+        @if (year.invalid && (year.dirty || year.touched)) {
+          <div class="error-message">
+            Year is required and must be between 1900 and 2100
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="plot">Plot</label>
+        <textarea 
+          id="plot" 
+          name="plot"
+          [(ngModel)]="movie.plot"
+          rows="4"
+          class="form-control">
+        </textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="director">Director *</label>
+        <input 
+          type="text" 
+          id="director" 
+          name="director"
+          [(ngModel)]="movie.director"
+          required
+          class="form-control"
+          #director="ngModel">
+        @if (director.invalid && (director.dirty || director.touched)) {
+          <div class="error-message">Director is required</div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label>Genres</label>
+        <div class="genres-container">
+          @for (genre of genres; track genre.id) {
+            <div class="genre-checkbox">
+              <input 
+                type="checkbox" 
+                [id]="'genre-' + genre.id"
+                [checked]="isGenreSelected(genre.id)"
+                (change)="onGenreChange(genre.id, $any($event.target).checked)">
+              <label [for]="'genre-' + genre.id">{{ genre.name }}</label>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="rating">Rating</label>
+        <input 
+          type="number" 
+          id="rating" 
+          name="rating"
+          [(ngModel)]="movie.rating"
+          min="0"
+          max="10"
+          step="0.1"
+          class="form-control">
+      </div>
+
+      <div class="form-actions">
+        <button 
+          type="submit" 
+          class="btn btn-primary"
+          [disabled]="!movieForm.form.valid || saving">
+          {{ saving ? 'Saving...' : 'Save Changes' }}
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-secondary" 
+          (click)="cancel()"
+          [disabled]="saving">
+          Cancel
+        </button>
+      </div>
+    </form>
+  }
+</div>

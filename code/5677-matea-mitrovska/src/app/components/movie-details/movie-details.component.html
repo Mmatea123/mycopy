@@ -1,0 +1,145 @@
+<div class="movie-details-container">
+  @if (loading) {
+    <div class="loading">Loading movie details...</div>
+  } @else if (error) {
+    <div class="error">{{ error }}</div>
+  } @else if (!movie) {
+    <div class="no-movie">Movie not found.</div>
+  } @else {
+    <div class="movie-details">
+      <h2>{{ movie.title }}</h2>
+      
+      <div class="details-grid">
+        <div class="detail-item">
+          <strong>ID:</strong>
+          <span>{{ movie.id }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <strong>Year:</strong>
+          <span>{{ movie.year }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <strong>Director:</strong>
+          <span>{{ movie.director }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <strong>Rating:</strong>
+          <span>{{ movie.rating }}</span>
+        </div>
+      </div>
+
+      @if (movie.plot) {
+        <div class="plot-section">
+          <h3>Plot</h3>
+          <p>{{ movie.plot }}</p>
+        </div>
+      }
+
+      @if (movie.genre && movie.genre.length > 0) {
+        <div class="genres-section">
+          <h3>Genres</h3>
+          <ul class="genre-list">
+            @for (genre of movie.genre; track genre) {
+              <li>{{ genre }}</li>
+            }
+          </ul>
+        </div>
+      }
+
+      @if (movie.oscars && Object.keys(movie.oscars).length > 0) {
+        <div class="oscars-section">
+          <h3>Oscars</h3>
+          <ul class="oscars-list">
+            @for (oscar of getSortedOscars(); track oscar[0]) {
+              <li>
+                <strong>{{ formatOscarName(oscar[0]) }}:</strong>
+                <span>{{ oscar[1] }}</span>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+
+      @if (movie.cast && movie.cast.length > 0) {
+        <div class="cast-section">
+          <h3>Cast</h3>
+          <ul class="cast-list">
+            @for (member of movie.cast; track member.actor) {
+              <li>
+                @if (hasActorDetails(member.actor)) {
+                  <a [routerLink]="['/actor', getActorId(member.actor)]" class="actor-link">
+                    {{ member.actor }}
+                  </a>
+                } @else {
+                  <span>{{ member.actor }}</span>
+                }
+                <span> as {{ member.character }}</span>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+
+      <div class="actions">
+        <a [routerLink]="['/movies', movie.id, 'edit']" class="btn btn-warning">Edit</a>
+        <button (click)="deleteMovie()" class="btn btn-danger">Delete</button>
+        <a [routerLink]="['/movies', movie.id, 'cast', 'add']" class="btn btn-secondary">Add Cast</a>
+        <a routerLink="/movies" class="btn btn-primary">Back to List</a>
+      </div>
+
+      @if (similarMovies.length > 0) {
+        <div class="section similar-movies">
+          <h3>Similar Movies</h3>
+          <ul class="similar-list">
+            @for (movie of similarMovies; track movie.id) {
+              <li>
+                <a [routerLink]="['/movies', movie.id]">
+                  {{ movie.title }} ({{ movie.year }})
+                </a>
+                <span class="common-genres">
+                  Genres: {{ movie.genre.join(', ') }}
+                </span>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+
+      @if (similarDirectorMovies.length > 0) {
+        <div class="section similar-directors">
+          <h3>More by {{ movie.director }}</h3>
+          <ul class="similar-list">
+            @for (movie of similarDirectorMovies; track movie.id) {
+              <li>
+                <a [routerLink]="['/movies', movie.id]">
+                  {{ movie.title }} ({{ movie.year }})
+                </a>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+
+      @if (similarActorMovies.length > 0) {
+        <div class="section similar-actors">
+          <h3>Movies with Similar Cast</h3>
+          <ul class="similar-list">
+            @for (movie of similarActorMovies; track movie.id) {
+              <li>
+                <a [routerLink]="['/movies', movie.id]">
+                  {{ movie.title }} ({{ movie.year }})
+                </a>
+                <span class="common-cast">
+                  Cast: {{ getCastList(movie) }}
+                </span>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+    </div>
+  }
+</div>

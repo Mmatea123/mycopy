@@ -1,0 +1,89 @@
+<div class="statistics-container">
+  @if (loading) {
+    <div class="loading">Loading statistics...</div>
+  } @else if (error) {
+    <div class="error">{{ error }}</div>
+  } @else if (!statistics) {
+    <div class="no-data">No statistics available.</div>
+  } @else {
+    <h2>Movie Database Statistics</h2>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>Overview</h3>
+        <ul class="stat-list">
+          <li>Total Movies: <span>{{ statistics.totalMovies }}</span></li>
+          <li>Total Actors: <span>{{ statistics.totalActors }}</span></li>
+          <li>Total Genres: <span>{{ statistics.totalGenres }}</span></li>
+          <li>Total Oscars: <span>{{ statistics.totalOscars }}</span></li>
+        </ul>
+      </div>
+
+      <div class="stat-card">
+        <h3>Oscars by Type</h3>
+        <ul class="stat-list">
+          @for (entry of statistics.oscarsPerType | keyvalue; track entry.key) {
+            <li>{{ formatOscarType(entry.key) }}: <span>{{ entry.value }}</span></li>
+          }
+        </ul>
+      </div>
+
+      <div class="stat-card">
+        <h3>Oscars by Genre</h3>
+        <ul class="stat-list">
+          @for (entry of statistics.oscarsPerGenre | keyvalue; track entry.key) {
+            <li>{{ entry.key }}: <span>{{ entry.value }}</span></li>
+          }
+        </ul>
+      </div>
+
+      <div class="stat-card">
+        <h3>Movies by Decade</h3>
+        <ul class="stat-list">
+          @for (entry of statistics.moviesPerDecade | keyvalue; track entry.key) {
+            <li>{{ entry.key }}: <span>{{ entry.value }}</span></li>
+          }
+        </ul>
+      </div>
+
+      <div class="stat-card">
+        <h3>Movies by Genre</h3>
+        <ul class="stat-list">
+          @for (entry of statistics.moviesPerGenre | keyvalue; track entry.key) {
+            <li>{{ entry.key }}: <span>{{ entry.value }}</span></li>
+          }
+        </ul>
+      </div>
+
+      <div class="stat-card">
+        <h3>Missing Details</h3>
+        <ul class="stat-list">
+          <li>Actors without details: <span>{{ statistics.actorsWithoutDetails }}</span></li>
+          <li>Movies without details: <span>{{ statistics.moviesWithoutDetails }}</span></li>
+        </ul>
+      </div>
+
+      @if (statistics.actorsWithoutDetailsList.length > 0) {
+        <div class="stat-card full-width">
+          <h3>Actors Missing Details</h3>
+          <ul class="detail-list">
+            @for (actor of statistics.actorsWithoutDetailsList; track actor) {
+              <li>{{ actor }}</li>
+            }
+          </ul>
+        </div>
+      }
+
+      @if (statistics.moviesWithoutDetailsList.length > 0) {
+        <div class="stat-card full-width">
+          <h3>Movies Missing Details</h3>
+          <ul class="detail-list">
+            @for (movie of statistics.moviesWithoutDetailsList; track movie.id) {
+              <li>{{ movie.title }} ({{ movie.year }})</li>
+            }
+          </ul>
+        </div>
+      }
+    </div>
+  }
+</div>

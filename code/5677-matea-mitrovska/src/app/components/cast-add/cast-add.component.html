@@ -1,0 +1,74 @@
+<div class="cast-add-container">
+  @if (loading) {
+    <div class="loading">Loading movie details...</div>
+  } @else if (error) {
+    <div class="error">{{ error }}</div>
+  } @else if (!movie) {
+    <div class="no-movie">Movie not found.</div>
+  } @else {
+    <div class="cast-add-content">
+      <h2>Add Cast Member to "{{ movie.title }}"</h2>
+
+      <form (ngSubmit)="onSubmit()" #castForm="ngForm" class="cast-form">
+        <div class="form-group">
+          <label for="actor">Actor Name *</label>
+          <input 
+            type="text" 
+            id="actor" 
+            name="actor"
+            [(ngModel)]="newCastMember.actor"
+            required
+            class="form-control"
+            #actor="ngModel">
+          @if (actor.invalid && (actor.dirty || actor.touched)) {
+            <div class="error-message">Actor name is required</div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="character">Character Name *</label>
+          <input 
+            type="text" 
+            id="character" 
+            name="character"
+            [(ngModel)]="newCastMember.character"
+            required
+            class="form-control"
+            #character="ngModel">
+          @if (character.invalid && (character.dirty || character.touched)) {
+            <div class="error-message">Character name is required</div>
+          }
+        </div>
+
+        <div class="current-cast" *ngIf="movie.cast && movie.cast.length > 0">
+          <h3>Current Cast</h3>
+          <ul class="cast-list">
+            @for (member of movie.cast; track member.actor) {
+              <li>
+                <span class="actor">{{ member.actor }}</span>
+                <span class="as">as</span>
+                <span class="character">{{ member.character }}</span>
+              </li>
+            }
+          </ul>
+        </div>
+
+        <div class="form-actions">
+          <button 
+            type="submit" 
+            class="btn btn-primary"
+            [disabled]="!castForm.form.valid || saving">
+            {{ saving ? 'Adding...' : 'Add Cast Member' }}
+          </button>
+          <button 
+            type="button" 
+            class="btn btn-secondary" 
+            (click)="cancel()"
+            [disabled]="saving">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+</div>

@@ -1,0 +1,116 @@
+<div class="movie-list-container">
+  <div class="header">
+    <h2>Movies</h2>
+    <a routerLink="/movies/create" class="btn btn-primary">Add Movie</a>
+  </div>
+
+  @if (loading) {
+    <div class="loading">Loading movies...</div>
+  } @else if (error) {
+    <div class="error">{{ error }}</div>
+  } @else {
+    <div class="filters">
+      <div class="filter-group">
+        <label for="title-filter">Title</label>
+        <input 
+          type="text" 
+          id="title-filter"
+          [(ngModel)]="filterConfig.title"
+          (ngModelChange)="applyFilters()"
+          placeholder="Search by title..."
+          class="form-control">
+      </div>
+
+      <div class="filter-group">
+        <label for="year-filter">Year</label>
+        <input 
+          type="number" 
+          id="year-filter"
+          [(ngModel)]="filterConfig.year"
+          (ngModelChange)="applyFilters()"
+          placeholder="Filter by year"
+          class="form-control">
+      </div>
+
+      <div class="filter-group">
+        <label for="genre-filter">Genre</label>
+        <select 
+          id="genre-filter"
+          [(ngModel)]="filterConfig.genre"
+          (ngModelChange)="applyFilters()"
+          class="form-control">
+          <option value="">All Genres</option>
+          @for (genre of genres; track genre.id) {
+            <option [value]="genre.id">{{ genre.name }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="rating-filter">Min Rating</label>
+        <input 
+          type="number" 
+          id="rating-filter"
+          [(ngModel)]="filterConfig.rating"
+          (ngModelChange)="applyFilters()"
+          min="0"
+          max="10"
+          step="0.1"
+          placeholder="Min rating"
+          class="form-control">
+      </div>
+    </div>
+
+    @if (filteredMovies.length === 0) {
+      <div class="no-movies">No movies found.</div>
+    } @else {
+      <table class="movie-table">
+        <thead>
+          <tr>
+            <th (click)="toggleSort('id')">
+              ID <span class="sort-icon">{{ getSortIcon('id') }}</span>
+            </th>
+            <th (click)="toggleSort('title')">
+              Title <span class="sort-icon">{{ getSortIcon('title') }}</span>
+            </th>
+            <th (click)="toggleSort('year')">
+              Year <span class="sort-icon">{{ getSortIcon('year') }}</span>
+            </th>
+            <th (click)="toggleSort('director')">
+              Director <span class="sort-icon">{{ getSortIcon('director') }}</span>
+            </th>
+            <th (click)="toggleSort('genre')">
+              Genre <span class="sort-icon">{{ getSortIcon('genre') }}</span>
+            </th>
+            <th (click)="toggleSort('oscars')">
+              Oscars <span class="sort-icon">{{ getSortIcon('oscars') }}</span>
+            </th>
+            <th (click)="toggleSort('rating')">
+              Rating <span class="sort-icon">{{ getSortIcon('rating') }}</span>
+            </th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (movie of filteredMovies; track movie.id) {
+            <tr>
+              <td>{{ movie.id }}</td>
+              <td>{{ movie.title }}</td>
+              <td>{{ movie.year }}</td>
+              <td>{{ movie.director }}</td>
+              <td>{{ formatGenres(movie.genre) }}</td>
+              <td>{{ getOscarCount(movie) }}</td>
+              <td>{{ movie.rating }}</td>
+              <td class="actions">
+                <a [routerLink]="['/movies', movie.id]" class="btn btn-info">View</a>
+                <a [routerLink]="['/movies', movie.id, 'edit']" class="btn btn-warning">Edit</a>
+                <button (click)="deleteMovie(movie.id)" class="btn btn-danger">Delete</button>
+                <a [routerLink]="['/movies', movie.id, 'cast', 'add']" class="btn btn-secondary">Add Cast</a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  }
+</div>
